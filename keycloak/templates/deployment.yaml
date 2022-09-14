@@ -1,0 +1,132 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "keycloak.fullname" . }}
+  namespace: {{ include "keycloak.namespace" . }}
+  labels:
+    {{- include "keycloak.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicas }}
+  {{- end }}
+  {{- with .Values.strategy }}
+  strategy:
+    {{- toYaml . | nindent 4 }}
+  {{- end }
+  selector:
+    matchLabels:
+      {{- include "keycloak.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "keycloak.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "keycloak.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: JGROUPS_DISCOVERY_PROTOCOL
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Chart.Name }}
+                  key: JGROUPS_DISCOVERY_PROTOCOL
+            - name: JGROUPS_DISCOVERY_PROPERTIES
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Chart.Name }}
+                  key: JGROUPS_DISCOVERY_PROPERTIES
+            - name: PROXY_ADDRESS_FORWARDING
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Chart.Name }}
+                  key: PROXY_ADDRESS_FORWARDING
+            - name: KEYCLOAK_LOGLEVEL
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Chart.Name }}
+                  key: KEYCLOAK_LOGLEVEL
+            - name: DB_VENDOR
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Chart.Name }}
+                  key: DB_VENDOR
+            - name: KEYCLOAK_USER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Chart.Name }}
+                  key: KEYCLOAK_USER
+            - name: KEYCLOAK_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Chart.Name }}
+                  key: KEYCLOAK_PASSWORD
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Chart.Name }}
+                  key: DB_USER
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Chart.Name }}
+                  key: DB_PASSWORD
+            - name: DB_ADDR
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Chart.Name }}
+                  key: DB_ADDR
+            - name: DB_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Chart.Name }}
+                  key: DB_PORT
+            - name: DB_DATABASE
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Chart.Name }}
+                  key: DB_DATABASE
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          livenessProbe:
+            tcpSocket:
+              port: 8080
+            {{- toYaml .Values.probe | nindent 12 }}
+          readinessProbe:
+            tcpSocket:
+              port: 8080
+            {{- toYaml .Values.probe | nindent 12 }}
+          resources:
+            requests:
+              memory: {{ .Values.resources.memory | print "Mi" }}
+              cpu: {{ .Values.resources.cpu | print "m" }}
+            limits:
+              memory: {{ .Values.resources.memory | mul .Values.resources.overselling | print "Mi" }}
+              cpu: {{ .Values.resources.cpu | mul .Values.resources.overselling | print "m" }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

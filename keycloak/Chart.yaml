@@ -1,0 +1,29 @@
+apiVersion:  v2
+name:        keycloak
+description: A Helm chart for KeyCloak
+
+type: application
+
+version: 0.1.0
+
+appVersion: "1.16.0"
+
+keywords:
+  - sso
+  - idm
+  - openid connect
+  - saml
+  - kerberos
+  - ldap
+home: https://www.keycloak.org/
+icon: https://www.keycloak.org/resources/images/keycloak_icon_512px.svg
+
+maintainers:
+  - name: dp
+    email: dp.dddeeemmm@gmail.com
+
+#dependencies:
+#  - name: postgresql
+#    version: 10.16.2
+#    repository: https://charts.bitnami.com/bitnami
+#    condition: postgresql.enabled
