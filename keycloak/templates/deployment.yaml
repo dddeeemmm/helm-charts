@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ include "keycloak.fullname" . }}
-  namespace: {{ include "keycloak.namespace" . }}
+  namespace: {{ .Values.namespace }}
   labels:
     {{- include "keycloak.labels" . | nindent 4 }}
 spec:
@@ -12,7 +12,7 @@ spec:
   {{- with .Values.strategy }}
   strategy:
     {{- toYaml . | nindent 4 }}
-  {{- end }
+  {{- end }}
   selector:
     matchLabels:
       {{- include "keycloak.selectorLabels" . | nindent 6 }}
