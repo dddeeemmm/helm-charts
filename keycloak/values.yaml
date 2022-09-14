@@ -15,7 +15,7 @@ image:
   tag:        15.0.2
 
 imagePullSecrets: []
-nameOverride: ""
+nameOverride:     ""
 fullnameOverride: ""
 
 resources:
@@ -29,11 +29,11 @@ probe:
   failureThreshold:    5
 
 autoscaling:
-  enabled: false
-  minReplicas: 1
-  maxReplicas: 100
-  targetCPUUtilizationPercentage: 80
-  # targetMemoryUtilizationPercentage: 80
+  enabled:                           false
+  minReplicas:                       1
+  maxReplicas:                       100
+  targetCPUUtilizationPercentage:    80
+  targetMemoryUtilizationPercentage: 80
 
 serviceAccount:
   # Specifies whether a service account should be created
@@ -66,7 +66,7 @@ affinity:
     requiredDuringSchedulingIgnoredDuringExecution:
       nodeSelectorTerms:
         - matchExpressions:
-            - key: node-role.kubernetes.io/master
+            - key:      node-role.kubernetes.io/master
               operator: NotIn
               values:
                 - ""
@@ -75,7 +75,7 @@ affinity:
     requiredDuringSchedulingIgnoredDuringExecution:
       - labelSelector:
           matchExpressions:
-            - key: k8s-app
+            - key:      k8s-app
               operator: In
               values:
                 - '{{ k8s_mgmt_app_name }}'
@@ -103,15 +103,15 @@ service:
   port: 80
 
 ingress:
-  enabled: false
-  className: ""
+  enabled:     false
+  className:   ""
   annotations: {}
     # kubernetes.io/ingress.class: nginx
     # kubernetes.io/tls-acme: "true"
   hosts:
     - host: chart-example.local
       paths:
-        - path: /
+        - path:     /
           pathType: ImplementationSpecific
   tls: []
   #  - secretName: chart-example-tls
