@@ -21,6 +21,6 @@ entries:
     name: keycloak
     type: application
     urls:
-    - https://dddeeemmm.github.io/helm-chart/keycloak-0.1.0.tgz
+    - https://dddeeemmm.github.io/helm-charts/keycloak-0.1.0.tgz
     version: 0.1.0
 generated: "2022-09-14T22:02:59.2936+03:00"
